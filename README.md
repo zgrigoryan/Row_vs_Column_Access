@@ -34,7 +34,7 @@ To ensure robust statistics, the program runs each test over multiple iterations
 2. **Compile the Code:**
    For example, using `g++`:
    ```bash
-   g++ -std=c++11 -O2 main.cpp -o matrix_benchmark
+   g++ -std=c++17 -O2 main.cpp -o matrix_benchmark
    ```
 
 ## Usage
