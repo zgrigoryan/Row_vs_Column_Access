@@ -37,6 +37,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download Kaizen
+        run: |
+          mkdir -p ${{ github.workspace }}/external
+          wget -O ${{ github.workspace }}/external/kaizen.h \
+               https://raw.githubusercontent.com/heinsaar/kaizen/main/kaizen.h
+
+      - name: List project files
+        run: ls -R ${{ github.workspace }}
+
       - name: Set reusable strings
         id: strings
         shell: bash
@@ -49,12 +58,13 @@ jobs:
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
           -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_CXX_FLAGS="-I${{ github.workspace }}/external"
           -S ${{ github.workspace }}
 
       - name: Build
         run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
-      - name: Run Unit Tests with CTest
+      - name: Test
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
         run: ctest --build-config ${{ matrix.build_type }}
 
