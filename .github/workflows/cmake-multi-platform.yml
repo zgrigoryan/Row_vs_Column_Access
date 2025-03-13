@@ -80,7 +80,11 @@ jobs:
         run: |
           echo "Running benchmark tests..."
           if [[ "$RUNNER_OS" == "Windows_NT" ]]; then
-            benchmark_cmd="matrix_benchmark.exe"
+          if [ -d "Release" ]; then
+          cd Release
+          echo "Changed directory to Release"
+          fi
+          benchmark_cmd="matrix_benchmark.exe"
           else
             benchmark_cmd="./matrix_benchmark"
           fi
@@ -88,3 +92,4 @@ jobs:
           $benchmark_cmd --size 3000 --iterations 10 > benchmark_output.txt
           echo "Benchmark output:"
           cat benchmark_output.txt
+
