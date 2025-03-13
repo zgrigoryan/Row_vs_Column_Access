@@ -1,4 +1,4 @@
-name: CMake on multiple platforms
+name: CMake with Kaizen from Release
 
 on:
   push:
@@ -41,10 +41,7 @@ jobs:
         run: |
           mkdir -p ${{ github.workspace }}/external
           wget -O ${{ github.workspace }}/external/kaizen.h \
-               https://raw.githubusercontent.com/heinsaar/kaizen/main/kaizen.h
-
-      - name: List project files
-        run: ls -R ${{ github.workspace }}
+               https://github.com/heinsaar/kaizen/releases/download/v0.1.0/kaizen.h
 
       - name: Set reusable strings
         id: strings
@@ -67,7 +64,7 @@ jobs:
       - name: Test
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
         run: ctest --build-config ${{ matrix.build_type }}
-
+        
       - name: Run Benchmark Test
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
         run: |
