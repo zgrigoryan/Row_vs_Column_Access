@@ -36,6 +36,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      # ---------------------------------------------
+      # Use 'shell: bash' so 'curl' + 'mkdir -p' works
+      # on both Windows (Git Bash) and Linux.
+      # ---------------------------------------------
       - name: Download Kaizen 0.1.0
         shell: bash
         run: |
