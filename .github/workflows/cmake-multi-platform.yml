@@ -74,21 +74,17 @@ jobs:
           echo "Running tests..."
           ctest --build-config "${{ matrix.build_type }}"
           
-      - name: Run Benchmark Test
+      - name: Run Benchmark (Optional)
+        shell: bash
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
         run: |
           echo "Running benchmark tests..."
-          ./matrix_benchmark --size 3000 --iterations 10 > benchmark_output.txt
+          if [[ "$RUNNER_OS" == "Windows_NT" ]]; then
+            benchmark_cmd="matrix_benchmark.exe"
+          else
+            benchmark_cmd="./matrix_benchmark"
+          fi
+          echo "Executing: $benchmark_cmd --size 3000 --iterations 10"
+          $benchmark_cmd --size 3000 --iterations 10 > benchmark_output.txt
           echo "Benchmark output:"
           cat benchmark_output.txt
-
-      - name: Verify Benchmark Output
-        working-directory: ${{ steps.strings.outputs.build-output-dir }}
-        run: |
-          # Compare the produced output to an expected output file.
-          # If you don't have an expected file, you can remove this step.
-          if [ -f expected_benchmark_output.txt ]; then
-            diff benchmark_output.txt expected_benchmark_output.txt || echo "Benchmark output differs from expected."
-          else
-            echo "No expected output file found. Skipping output verification."
-          fi
