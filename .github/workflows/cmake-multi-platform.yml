@@ -36,15 +36,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Download Kaizen
+      - name: Download Kaizen 0.1.0
+        shell: bash
         run: |
-          mkdir -p ${{ github.workspace }}/external
-          wget -O ${{ github.workspace }}/external/kaizen.h \
-               https://github.com/heinsaar/kaizen/releases/download/0.1.0/kaizen.h
-
-      - name: List files
-        run: ls -R ${{ github.workspace }}
+          mkdir -p "${{ github.workspace }}/external"
+          curl -L -o "${{ github.workspace }}/external/kaizen.h" \
+               "https://github.com/heinsaar/kaizen/releases/download/0.1.0/kaizen.h"
 
       - name: Set reusable strings
         id: strings
@@ -53,6 +50,7 @@ jobs:
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
       - name: Configure CMake
+        shell: bash
         run: >
           cmake -B ${{ steps.strings.outputs.build-output-dir }}
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
@@ -62,12 +60,14 @@ jobs:
           -S ${{ github.workspace }}
 
       - name: Build
+        shell: bash
         run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
       - name: Test
+        shell: bash
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
         run: ctest --build-config ${{ matrix.build_type }}
-        
+
       - name: Run Benchmark Test
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
         run: |
