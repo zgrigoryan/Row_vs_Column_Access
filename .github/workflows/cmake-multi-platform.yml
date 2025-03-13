@@ -74,7 +74,7 @@ jobs:
           echo "Running tests..."
           ctest --build-config "${{ matrix.build_type }}"
           
-      - name: Run Benchmark (Optional)
+      - name: Run Benchmark 
         shell: bash
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
         run: |
