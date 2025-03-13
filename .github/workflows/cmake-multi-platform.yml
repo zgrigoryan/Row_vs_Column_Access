@@ -37,12 +37,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download Kaizen
-        run: |
-          mkdir -p ${{ github.workspace }}/external
-          wget -O ${{ github.workspace }}/external/kaizen.h \
-               https://github.com/heinsaar/kaizen/releases/download/v0.1.0/kaizen.h
-
       - name: Set reusable strings
         id: strings
         shell: bash
