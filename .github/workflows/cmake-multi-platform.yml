@@ -37,10 +37,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ---------------------------------------------
-      # Use 'shell: bash' so 'curl' + 'mkdir -p' works
-      # on both Windows (Git Bash) and Linux.
-      # ---------------------------------------------
       - name: Download Kaizen 0.1.0
         shell: bash
         run: |
@@ -56,23 +52,28 @@ jobs:
 
       - name: Configure CMake
         shell: bash
-        run: >
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}
-          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          -DCMAKE_CXX_FLAGS="-I${{ github.workspace }}/external"
-          -S ${{ github.workspace }}
+        run: |
+          echo "Configuring CMake..."
+          cmake -B "${{ steps.strings.outputs.build-output-dir }}" \
+                -S "${{ github.workspace }}" \
+                -DCMAKE_CXX_COMPILER="${{ matrix.cpp_compiler }}" \
+                -DCMAKE_C_COMPILER="${{ matrix.c_compiler }}" \
+                -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}" \
+                -DCMAKE_CXX_FLAGS="-I${{ github.workspace }}/external"
 
       - name: Build
         shell: bash
-        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+        run: |
+          echo "Building..."
+          cmake --build "${{ steps.strings.outputs.build-output-dir }}" --config "${{ matrix.build_type }}"
 
       - name: Test
         shell: bash
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
-        run: ctest --build-config ${{ matrix.build_type }}
-
+        run: |
+          echo "Running tests..."
+          ctest --build-config "${{ matrix.build_type }}"
+          
       - name: Run Benchmark Test
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
         run: |
