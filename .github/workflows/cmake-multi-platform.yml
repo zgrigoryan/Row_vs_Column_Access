@@ -1,4 +1,4 @@
-name: CMake with Kaizen from Release
+name: CMake on multiple platforms
 
 on:
   push:
@@ -36,6 +36,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download Kaizen
+        run: |
+          mkdir -p ${{ github.workspace }}/external
+          wget -O ${{ github.workspace }}/external/kaizen.h \
+               https://github.com/heinsaar/kaizen/releases/download/0.1.0/kaizen.h
+
+      - name: List files
+        run: ls -R ${{ github.workspace }}
 
       - name: Set reusable strings
         id: strings
