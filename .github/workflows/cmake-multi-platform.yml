@@ -82,13 +82,13 @@ jobs:
           echo "Running benchmark tests..."
           ls -R  
 
+          
           if [[ "$RUNNER_OS" == "Windows_NT" ]]; then
-            if [ -f "Release/matrix_benchmark.exe" ]]; then
-              benchmark_cmd="Release/matrix_benchmark.exe"
-            else
-              echo "Error: matrix_benchmark.exe not found in Release folder!"
-              exit 1
-            fi
+            executable_name="matrix_benchmark.exe"
+            executable_path="${{ github.workspace }}\\build\\${{ matrix.build_type }}\\$executable"  # Absolute path for Windows
+          else
+            executable_path="${{ github.workspace }}/build/$executable"  # Absolute path for Linux/macOS
+          fi
           elif [ -f "matrix_benchmark" ]; then
             benchmark_cmd="./matrix_benchmark"
           else
