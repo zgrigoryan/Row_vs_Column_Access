@@ -81,18 +81,14 @@ jobs:
         run: |
           echo "Running benchmark tests..."
           ls -R  
-          
-          if [[ "$RUNNER_OS" == "Windows_NT" ]]; then
-            if [ -d "Release" ]; then
-              cd Release
-              echo "Changed directory to Release"
-            fi
-          fi
 
-          ls -R  
-          
-          if [ -f "matrix_benchmark.exe" ]; then
-            benchmark_cmd="matrix_benchmark.exe"
+          if [[ "$RUNNER_OS" == "Windows_NT" ]]; then
+            if [ -f "Release/matrix_benchmark.exe" ]]; then
+              benchmark_cmd="Release/matrix_benchmark.exe"
+            else
+              echo "Error: matrix_benchmark.exe not found in Release folder!"
+              exit 1
+            fi
           elif [ -f "matrix_benchmark" ]; then
             benchmark_cmd="./matrix_benchmark"
           else
