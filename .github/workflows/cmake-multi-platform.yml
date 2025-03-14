@@ -80,12 +80,17 @@ jobs:
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
         run: |
           echo "Running benchmark tests..."
+          ls -R  
+          
           if [[ "$RUNNER_OS" == "Windows_NT" ]]; then
             if [ -d "Release" ]; then
               cd Release
               echo "Changed directory to Release"
             fi
           fi
+
+          ls -R  
+          
           if [ -f "matrix_benchmark.exe" ]; then
             benchmark_cmd="matrix_benchmark.exe"
           elif [ -f "matrix_benchmark" ]; then
@@ -94,6 +99,7 @@ jobs:
             echo "Error: matrix_benchmark executable not found!"
             exit 1
           fi
+
           echo "Executing: $benchmark_cmd --size 3000 --iterations 10"
           $benchmark_cmd --size 3000 --iterations 10 > benchmark_output.txt
           echo "Benchmark output:"
