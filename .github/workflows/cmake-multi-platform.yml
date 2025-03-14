@@ -79,12 +79,10 @@ jobs:
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
         run: |
           echo "Running benchmark tests..."
-          ls -R  
 
-          # Set executable name
           executable_name="matrix_benchmark"
 
-          if [[ "$RUNNER_OS" == "Windows_NT" ]]; then
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
             executable_name="matrix_benchmark.exe"
             executable_path="Release/$executable_name"  # Windows binary is in Release/
           else
