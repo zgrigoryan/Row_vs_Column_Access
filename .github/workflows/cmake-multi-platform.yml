@@ -76,14 +76,19 @@ jobs:
           ctest --build-config "${{ matrix.build_type }}"
 
       - name: Run Benchmark 
-        shell: bash
+        shell: 
+          if [[ "$RUNNER_OS" == "Windows_NT" ]]; then
+            echo "cmd"
+          else
+            echo "bash"
+          fi
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
         run: |
           echo "Running benchmark tests..."
 
           if [[ "$RUNNER_OS" == "Windows_NT" ]]; then
             executable_name="matrix_benchmark.exe"
-            executable_path="Release/$executable_name"  # Windows executable path
+            executable_path="Release\\$executable_name"  # Windows executable path
           else
             executable_name="matrix_benchmark"
             executable_path="./$executable_name"  # Linux/macOS executable path
