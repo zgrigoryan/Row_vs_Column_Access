@@ -1,4 +1,3 @@
-# this comment has no meaning 
 name: CMake on multiple platforms
 
 on:
@@ -75,34 +74,29 @@ jobs:
           echo "Running tests..."
           ctest --build-config "${{ matrix.build_type }}"
 
-       - name: Run Executable
-        working-directory: ${{ steps.strings.outputs.build-output-dir }}
+      - name: Run Executable
         shell: bash
+        working-directory: ${{ steps.strings.outputs.build-output-dir }}
         run: |
-          # Set executable name based on OS
-          executable="matrix_benchmark"  # Start with base executable name
-          
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            executable="matrix_benchmark.exe"  # Add .exe for Windows
-            # On Windows, we should ensure that we run in the correct directory
-            executable_path="${{ github.workspace }}\\build\\${{ matrix.build_type }}\\$executable"  # Absolute path for Windows
+          echo "Running benchmark tests..."
+          ls -R  
+
+          # Set executable name
+          executable_name="matrix_benchmark"
+
+          if [[ "$RUNNER_OS" == "Windows_NT" ]]; then
+            executable_name="matrix_benchmark.exe"
+            executable_path="Release/$executable_name"  # Windows binary is in Release/
           else
-            executable_path="${{ github.workspace }}/build/$executable"  # Absolute path for Linux/macOS
+            executable_path="./$executable_name"  # Linux/macOS binary
           fi
-          
-          # Check if the file exists before trying to run it
+
+          # Check if the executable exists before running
           echo "Checking if executable exists: $executable_path"
           if [ -f "$executable_path" ]; then
-            echo "Executable found, running it"
-            # Run executable based on the platform
-            if [ "$RUNNER_OS" == "Windows" ]; then
-              # For Windows, use cmd to run the exe if it's Windows
-              "$executable_path" --size 1000 --iterations 300
-            else
-              # Run directly on Linux/macOS without './' for absolute path
-              "$executable_path" --size 1000 --iterations 300  # This works for both Linux/macOS
-            fi
+            echo "Executable found, running it..."
+            "$executable_path" --size 1000 --iterations 300
           else
-            echo "Executable not found: $executable_path"
-            exit 1  # Fail if the executable isn't found
+            echo "Error: Executable not found at $executable_path"
+            exit 1
           fi
