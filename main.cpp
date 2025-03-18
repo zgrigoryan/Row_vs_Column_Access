@@ -3,6 +3,7 @@
 #include <string>
 #include <chrono>
 #include <cmath>
+#include <numeric> 
 #include <iomanip>
 #include "kaizen.h"
 
