@@ -98,3 +98,72 @@ jobs:
             echo "Error: Executable not found at $executable_path"
             exit 1
           fi
+
+      - name: Run Large Matrix Benchmark
+        shell: bash
+        working-directory: ${{ steps.strings.outputs.build-output-dir }}
+        run: |
+          echo "Running large matrix benchmark..."
+
+          executable_name="matrix_benchmark"
+
+          if [[ \"$RUNNER_OS\" == \"Windows\" ]]; then
+            executable_name=\"matrix_benchmark.exe\"
+            executable_path=\"Release/$executable_name\"  # Windows binary is in Release/
+          else
+            executable_path=\"./$executable_name\"  # Linux/macOS binary
+          fi
+
+          echo \"Checking if executable exists: $executable_path\"
+          if [ -f \"$executable_path\" ]; then
+            echo \"Executable found, running it for size=1000, iterations=300...\"
+            \"$executable_path\" --size 1000 --iterations 300
+          else
+            echo \"Error: Executable not found at $executable_path\"
+            exit 1
+          fi
+
+      - name: Run 2x3 Matrix Benchmark
+        shell: bash
+        working-directory: ${{ steps.strings.outputs.build-output-dir }}
+        run: |
+          echo "Running 2x3 matrix benchmark..."
+
+          executable_name="matrix_benchmark"
+
+          if [[ \"$RUNNER_OS\" == \"Windows\" ]]; then
+            executable_name=\"matrix_benchmark.exe\"
+            executable_path=\"Release/$executable_name\"
+          else
+            executable_path=\"./$executable_name\"
+          fi
+
+          echo \"Checking if executable exists: $executable_path\"
+          if [ -f \"$executable_path\" ]; then
+            # Capture output in a file so we can grep it
+            \"$executable_path\" --size 2 --iterations 5 | tee run_2x3_output.txt
+          else
+            echo \"Error: Executable not found at $executable_path\"
+            exit 1
+          fi
+
+      - name: Check 2x3 Matrix Output
+        shell: bash
+        working-directory: ${{ steps.strings.outputs.build-output-dir }}
+        run: |
+          echo "Verifying that output for 2x3 matrix test is formatted correctly..."
+
+          if grep -q "Comparing traversal times for matrix size 2x3" run_2x3_output.txt; then
+            echo "SUCCESS: Found 2x3 matrix comparison line in the output!"
+          else
+            echo "FAIL: Could not find 2x3 matrix comparison line. Output is:"
+            cat run_2x3_output.txt
+            exit 1
+          fi
+
+          if grep -q "Average Row-major traversal time" run_2x3_output.txt; then
+              echo "Found row-major timing line!"
+          else
+              echo "Missing row-major timing line!"
+              exit 1
+          fi
